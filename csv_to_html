@@ -1,0 +1,64 @@
+import scala.io.Source
+import java.io._
+
+object csv_html extends App {
+  var header = <head>
+    <title>CsvToHTML</title>
+    <style type="text/css">
+      td {{background-color:#ddddff; }} thead td {{background-color:#ddffdd; text-align:center; }}
+    </style>
+  </head>
+  
+
+ 
+val csv1 = new scala.collection.mutable.ListBuffer[String]  
+var count=0
+var i=0
+val bufferedSource = io.Source.fromFile("C:/Users/paritosh.pantola/Desktop/admission.csv")
+  for (line <- bufferedSource.getLines) {
+    val cols = line.split(",").map(_.trim)
+	var k=cols.length
+	var i=0
+	while(k!=0){
+    csv1 += s"${cols(i)}"
+	csv1 += ","
+	k=k-1
+	i=i+1
+     }
+	 
+	 csv1+=","
+     csv1+="\n"
+    
+  }
+
+val csv = csv1.mkString(" ")
+  
+  def csv2html(csv: String, withHead: Boolean) = {
+ 
+    def processRow(text: String) = <tr>
+      {text.split(',').map(s => <td>
+        {s}
+      </td>)}
+    </tr>
+ 
+ var (first :: rest) = csv.lines.toList // Separate the header and the rest
+ 
+    def tableHead = if (withHead)
+      <thead>
+        {processRow(first)}
+      </thead>
+    else processRow(first)
+ 
+    <html>
+      {header}<body>
+      <table>
+        {tableHead}{rest.map(processRow)}
+      </table>
+    </body>
+    </html>
+    
+  }
+ println(csv2html(csv,false))  
+
+  
+}
